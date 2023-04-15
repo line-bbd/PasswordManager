@@ -10,15 +10,19 @@ namespace PasswordManager
     internal class Program
     {
         private static string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\bbdnet2782\Documents\BBD\Grad_program\C_sharp\PasswordManager\database\passwords.mdf;Integrated Security=True;Connect Timeout=30";
+
+        private static bool _isActive = true;
+
         static void Main(string[] args)
         {
+            Aggregator.Instance.Subscribe(nameof(QuitApp), QuitApp);
 
             StepManager.Instance.Initialize();
             StepManager.Instance.Start();
 
             string userInput;
 
-            while ((userInput = Console.ReadLine()) != "-1")
+            while (_isActive && (userInput = Console.ReadLine()) != "-1")
             {
                 StepManager.Instance.Select(int.Parse(userInput));
             }
@@ -47,6 +51,11 @@ namespace PasswordManager
             //    }
             //}
             //startPasswordManager();
+        }
+
+        private static void QuitApp()
+        {
+            _isActive = false;
         }
 
         private static void startPasswordManager()

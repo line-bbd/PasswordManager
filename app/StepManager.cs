@@ -99,9 +99,18 @@ namespace PasswordManager.app
 
         private void Quit()
         {
-            Console.WriteLine("Quited");
+            Aggregator.Instance.Raise(AggregatorMethodNames.QUIT_APP);
         }
 
         #endregion
     }
+
+    #region Common
+
+    public partial class AggregatorMethodNames
+    {
+        public const string QUIT_APP = "QuitApp";
+    }
+
+    #endregion
 }
