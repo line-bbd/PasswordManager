@@ -1,4 +1,5 @@
 ﻿using PasswordManager.app;
+using PasswordManager.app.Common;
 using System;
 using System.Data;
 using System.Data.SqlClient;

@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PasswordManager.app
+namespace PasswordManager.app.Common
 {
     internal class Aggregator
     {
         #region Fields
 
-        private Dictionary<String, Delegate> actions;
+        private Dictionary<string, Delegate> actions;
 
         #endregion
 
@@ -33,7 +33,7 @@ namespace PasswordManager.app
 
         #region Ctor
 
-        private Aggregator() { actions = new Dictionary<string, Delegate>();  }
+        private Aggregator() { actions = new Dictionary<string, Delegate>(); }
 
         #endregion
 
