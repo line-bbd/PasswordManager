@@ -9,6 +9,8 @@ namespace PasswordManager.app.Steps
 {
     internal class RegisterStep : IStep
     {
+        #region Overrides
+
         public override string GetDisplayOnSelectOption()
         {
             return SelectOptionsDisplay.REGISTER_STEP;
@@ -18,7 +20,11 @@ namespace PasswordManager.app.Steps
         {
             return StepTitles.REGISTER_STEP;
         }
+
+        #endregion
     }
+
+    #region Common
 
     public partial class StepTitles
     {
@@ -29,4 +35,6 @@ namespace PasswordManager.app.Steps
     {
         public const string REGISTER_STEP = "Register";
     }
+
+    #endregion
 }

@@ -29,8 +29,12 @@ namespace PasswordManager.app.Steps
         #endregion
     }
 
+    #region Common
+
     public partial class StepTitles
     {
         public const string STARTUP_STEP = "Welcome to Password Manager!";
     }
+
+    #endregion
 }

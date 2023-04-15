@@ -9,6 +9,8 @@ namespace PasswordManager.app.Steps
 {
     internal class LoginStep : IStep
     {
+        #region Overrides
+
         public override string GetDisplayOnSelectOption()
         {
             return SelectOptionsDisplay.LOGIN_STEP;
@@ -18,7 +20,11 @@ namespace PasswordManager.app.Steps
         {
             return StepTitles.LOGIN_STEP;
         }
+
+        #endregion
     }
+
+    #region Common
 
     public partial class StepTitles
     {
@@ -29,4 +35,6 @@ namespace PasswordManager.app.Steps
     {
         public const string LOGIN_STEP = "Login";
     }
+
+    #endregion
 }
