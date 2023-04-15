@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PasswordManager.app;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
@@ -11,30 +12,41 @@ namespace PasswordManager
         private static string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\bbdnet2782\Documents\BBD\Grad_program\C_sharp\PasswordManager\database\passwords.mdf;Integrated Security=True;Connect Timeout=30";
         static void Main(string[] args)
         {
-            var mp = getMasterPassword();
-            if (mp.Rows.Count == 0)
-            {
-                //TODO: Add loop for continuous verification prompting if something is wrong
-                Console.WriteLine("Hi, please create a master password.\n");
-                string masterPassword = maskInput();
-                Console.WriteLine("Please verify your master password.\n");
-                string verifiedPassword = maskInput();
 
-                // TODO: Add basic password security check? Length, special characters, etc.
-                if (masterPassword.Equals(verifiedPassword))
-                {
-                    Console.WriteLine("Welcome. Password is: " + masterPassword + '\n');
-                    if (addMasterPassword(masterPassword))
-                    {
-                        Console.WriteLine("Password successfully added.\n");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Passwords do not match.\n");
-                }
+            StepManager.Instance.Initialize();
+            StepManager.Instance.Start();
+
+            string userInput;
+
+            while ((userInput = Console.ReadLine()) != "-1")
+            {
+                StepManager.Instance.Select(int.Parse(userInput));
             }
-            startPasswordManager();
+
+            //var mp = getMasterPassword();
+            //if (mp.Rows.Count == 0)
+            //{
+            //    //TODO: Add loop for continuous verification prompting if something is wrong
+            //    Console.WriteLine("Hi, please create a master password.\n");
+            //    string masterPassword = maskInput();
+            //    Console.WriteLine("Please verify your master password.\n");
+            //    string verifiedPassword = maskInput();
+
+            //    // TODO: Add basic password security check? Length, special characters, etc.
+            //    if (masterPassword.Equals(verifiedPassword))
+            //    {
+            //        Console.WriteLine("Welcome. Password is: " + masterPassword + '\n');
+            //        if (addMasterPassword(masterPassword))
+            //        {
+            //            Console.WriteLine("Password successfully added.\n");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine("Passwords do not match.\n");
+            //    }
+            //}
+            //startPasswordManager();
         }
 
         private static void startPasswordManager()
