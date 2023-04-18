@@ -5,7 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
-using PasswordManager.app.Services;
+// using PasswordManager.app.Services;
 
 namespace PasswordManager
 {
@@ -18,20 +18,19 @@ namespace PasswordManager
         static void Main(string[] args)
         {
             // tested db with this
-            // Console.WriteLine(connectionString);
-            var userService = new UserServices(CrudOperation.Add, 1, "test1", "pw123", "SomethingElse2");
+            // var userService = new UserServices(CrudOperation.Add, 1, "test1", "pw123", "SomethingElse2");
 
-            // Aggregator.Instance.Subscribe(nameof(QuitApp), QuitApp);
+            Aggregator.Instance.Subscribe(nameof(QuitApp), QuitApp);
 
-            // StepManager.Instance.Initialize();
-            // StepManager.Instance.Start();
+            StepManager.Instance.Initialize();
+            StepManager.Instance.Start();
 
-            // string userInput;
+            string userInput;
 
-            // while (_isActive && (userInput = Console.ReadLine()) != "-1")
-            // {
-            //     StepManager.Instance.Select(int.Parse(userInput));
-            // }
+            while (_isActive && (userInput = Console.ReadLine()) != "-1")
+            {
+                StepManager.Instance.Select(int.Parse(userInput));
+            }
 
             //var mp = getMasterPassword();
             //if (mp.Rows.Count == 0)
