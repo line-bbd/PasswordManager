@@ -4,7 +4,7 @@ namespace PasswordManager.app.Services
 {
     internal class UserServices
     {
-        private readonly string _connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\bbdnet2782\Documents\BBD\Grad_program\PasswordManager\database\PasswordManagerDB.mdf;Integrated Security=True";
+        private readonly string _connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + getDBPath() + ";Integrated Security=True";
 
         #region Constructors
         public UserServices()
@@ -50,6 +50,13 @@ namespace PasswordManager.app.Services
         }
         public CrudOperation Operation { get; }
 
+        // method to get true file path of db
+        private static string getDBPath()
+        {
+            string systemPath = Path.GetFullPath("database\\");
+            systemPath = systemPath.Substring(0, systemPath.IndexOf("bin")) + "database\\PasswordManagerDB.mdf";
+            return systemPath;
+        }
     }
     internal enum CrudOperation
     {
@@ -57,4 +64,5 @@ namespace PasswordManager.app.Services
         Update,
         Delete
     }
+
 }

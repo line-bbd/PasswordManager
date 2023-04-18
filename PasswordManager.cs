@@ -5,25 +5,12 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
-// using PasswordManager.app.Services;
+using PasswordManager.app.Services;
 
 namespace PasswordManager
 {
     internal class Program
     {
-        // method to get true file path of db
-        private static string getDBPath()
-        {
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            string[] pathArray = path.Split('\\');
-            string dbPath = "";
-            for (int i = 0; i < pathArray.Length - 1; i++)
-            {
-                dbPath += pathArray[i] + "\\";
-            }
-            dbPath += "database\\PasswordManagerDB.mdf";
-            return dbPath;
-        }
         private static string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + getDBPath() + ";Integrated Security=True";
 
         private static bool _isActive = true;
@@ -31,19 +18,20 @@ namespace PasswordManager
         static void Main(string[] args)
         {
             // tested db with this
-            // var userService = new UserServices(CrudOperation.Add, 1, "test1", "pw123", "Disney+");
+            // Console.WriteLine(connectionString);
+            var userService = new UserServices(CrudOperation.Add, 1, "test1", "pw123", "SomethingElse2");
 
-            Aggregator.Instance.Subscribe(nameof(QuitApp), QuitApp);
+            // Aggregator.Instance.Subscribe(nameof(QuitApp), QuitApp);
 
-            StepManager.Instance.Initialize();
-            StepManager.Instance.Start();
+            // StepManager.Instance.Initialize();
+            // StepManager.Instance.Start();
 
-            string userInput;
+            // string userInput;
 
-            while (_isActive && (userInput = Console.ReadLine()) != "-1")
-            {
-                StepManager.Instance.Select(int.Parse(userInput));
-            }
+            // while (_isActive && (userInput = Console.ReadLine()) != "-1")
+            // {
+            //     StepManager.Instance.Select(int.Parse(userInput));
+            // }
 
             //var mp = getMasterPassword();
             //if (mp.Rows.Count == 0)
@@ -70,6 +58,13 @@ namespace PasswordManager
             //}
             //startPasswordManager();
 
+        }
+        // method to get true file path of db
+        private static string getDBPath()
+        {
+            string systemPath = Path.GetFullPath("database\\");
+            systemPath = systemPath.Substring(0, systemPath.IndexOf("bin")) + "database\\PasswordManagerDB.mdf";
+            return systemPath;
         }
 
         private static void QuitApp()
