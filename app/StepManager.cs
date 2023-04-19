@@ -1,4 +1,5 @@
-﻿using PasswordManager.app.Exceptions;
+﻿using PasswordManager.app.Common;
+using PasswordManager.app.Exceptions;
 using PasswordManager.app.interfaces;
 using PasswordManager.app.Steps;
 using System;
@@ -90,18 +91,22 @@ namespace PasswordManager.app
         {
             if (CurrentStep == initialStep)
             {
-                Quit();
+                Aggregator.Instance.Raise(AggregatorMethodNames.QUIT_APP);
                 return;
             }
 
             CurrentStep = _previousStep;
         }
 
-        private void Quit()
-        {
-            Console.WriteLine("Quited");
-        }
-
         #endregion
     }
+
+    #region Common
+
+    public partial class AggregatorMethodNames
+    {
+        public const string QUIT_APP = "QuitApp";
+    }
+
+    #endregion
 }
