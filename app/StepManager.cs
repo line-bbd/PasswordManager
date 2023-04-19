@@ -38,7 +38,7 @@ namespace PasswordManager.app
             get { return _currentStep; }
             set
             {
-                _previousStep = _currentStep;
+                _previousStep = (_currentStep.CanGoBackTo)? _currentStep : _previousStep;
                 _currentStep = value;
                 _previousStep.Deactivate();
                 _currentStep.Activate();
@@ -62,9 +62,12 @@ namespace PasswordManager.app
             initialStep = new StartupStep();
             IStep loginStep = new LoginStep();
             IStep registerStep = new RegisterStep();
+            IStep viewPasswordsStep = new ViewPasswordsStep();
 
             initialStep.SelectOptions.Add(loginStep);
             initialStep.SelectOptions.Add(registerStep);
+
+            loginStep.SelectOptions.Add(viewPasswordsStep);
 
             _currentStep = initialStep;
         }

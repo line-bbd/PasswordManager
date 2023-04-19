@@ -1,4 +1,5 @@
-﻿using PasswordManager.app.interfaces;
+﻿using PasswordManager.app.Common;
+using PasswordManager.app.interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,15 @@ namespace PasswordManager.app.Steps
 {
     internal class LoginStep : IStep
     {
+        #region Ctor
+
+        public LoginStep() : base()
+        {
+            _canGoBackTo = false;
+        }
+
+        #endregion
+
         #region Overrides
 
         public override string GetDisplayOnSelectOption()
@@ -19,6 +29,16 @@ namespace PasswordManager.app.Steps
         protected override string GetDisplayOnActivate()
         {
             return StepTitles.LOGIN_STEP;
+        }
+
+        protected override void HandleInput()
+        {
+            Console.Write("Username: ");
+            string username = Console.ReadLine();
+            Console.Write("Password: ");
+            string password = Console.ReadLine();
+
+            Console.Write("\n");
         }
 
         #endregion
