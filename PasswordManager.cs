@@ -5,17 +5,21 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
+// using PasswordManager.app.Services;
 
 namespace PasswordManager
 {
     internal class Program
     {
-        private static string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\bbdnet2782\Documents\BBD\Grad_program\C_sharp\PasswordManager\database\passwords.mdf;Integrated Security=True;Connect Timeout=30";
+        private static string connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + getDBPath() + ";Integrated Security=True";
 
         private static bool _isActive = true;
 
         static void Main(string[] args)
         {
+            // tested db with this
+            // var userService = new UserServices(CrudOperation.Add, 1, "test1", "pw123", "SomethingElse2");
+
             Aggregator.Instance.Subscribe(nameof(QuitApp), QuitApp);
 
             StepManager.Instance.Initialize();
@@ -52,6 +56,14 @@ namespace PasswordManager
             //    }
             //}
             //startPasswordManager();
+
+        }
+        // method to get true file path of db
+        private static string getDBPath()
+        {
+            string systemPath = Path.GetFullPath("database\\");
+            systemPath = systemPath.Substring(0, systemPath.IndexOf("bin")) + "database\\PasswordManagerDB.mdf";
+            return systemPath;
         }
 
         private static void QuitApp()
