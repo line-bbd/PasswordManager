@@ -9,6 +9,15 @@ namespace PasswordManager.app.Steps
 {
     internal class RegisterStep : IStep
     {
+        #region Ctor
+
+        public RegisterStep() : base()
+        {
+            _canGoBackTo = false;
+        }
+
+        #endregion
+
         #region Overrides
 
         public override string GetDisplayOnSelectOption()

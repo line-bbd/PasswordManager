@@ -28,6 +28,12 @@ namespace PasswordManager.app.interfaces
             }
         }
 
+        protected bool _canGoBackTo = true;
+        public bool CanGoBackTo
+        {
+            get => _canGoBackTo;
+        }
+
         #endregion
 
         #region Ctor
@@ -44,7 +50,9 @@ namespace PasswordManager.app.interfaces
 
         public void Activate()
         {
-            _logger.LogInfo(GetDisplayOnActivate());
+            _logger.LogInfo(GetDisplayOnActivate() + "\n");
+
+            HandleInput();
 
             if (SelectOptions.Count > 0)
             {
@@ -69,6 +77,7 @@ namespace PasswordManager.app.interfaces
 
         protected abstract String GetDisplayOnActivate();
         public abstract String GetDisplayOnSelectOption();
+        protected virtual void HandleInput() { }
         protected virtual string GetBackStep()
         {
             return "Back";
