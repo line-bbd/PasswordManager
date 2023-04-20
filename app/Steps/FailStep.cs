@@ -1,4 +1,5 @@
-﻿using PasswordManager.app.interfaces;
+﻿using PasswordManager.app.Exceptions;
+using PasswordManager.app.interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,23 +8,25 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.app.Steps
 {
-    internal class ViewPasswordsStep : IStep
+    internal class FailStep : IStep
     {
+        #region Private
+
+        private string message;
+
+        #endregion
+
         #region Ctor
 
-        public ViewPasswordsStep() : base()
+        public FailStep(string message) : base()
         {
-            _canGoBackTo = true;
+            _canGoBackTo = false;
+            this.message = message;
         }
 
         #endregion
 
         #region Private
-
-        private string FetchPasswordsForUser()
-        {
-            return "no stored passwords :(";
-        }
 
         #endregion
 
@@ -31,19 +34,19 @@ namespace PasswordManager.app.Steps
 
         public override string GetDisplayOnSelectOption()
         {
-            return SelectOptionsDisplay.VIEW_PASSWORDS_STEP;
+            throw new NotSelectableOptionException(this.GetType().Name);
         }
 
         protected override string GetDisplayOnActivate()
         {
-            return StepTitles.VIEW_PASSWORDS_STEP
-                + "\n\n"
-                + FetchPasswordsForUser();
+            return StepTitles.OUTCOME_STEP
+                + "\n"
+                + message;
         }
 
         protected override string GetBackStep()
         {
-            return "Logout";
+            return "Back";
         }
 
         #endregion
@@ -52,12 +55,12 @@ namespace PasswordManager.app.Steps
 
     public partial class StepTitles
     {
-        public const string VIEW_PASSWORDS_STEP = "Passwords Page";
+        public const string OUTCOME_STEP = "Outcome Page";
     }
 
     public partial class SelectOptionsDisplay
     {
-        public const string VIEW_PASSWORDS_STEP = "Continue";
+        public const string COMPLETE_STEP = "success :)";
     }
 
     #endregion

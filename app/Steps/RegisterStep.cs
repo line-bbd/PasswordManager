@@ -1,4 +1,5 @@
-﻿using PasswordManager.app.interfaces;
+﻿using PasswordManager.app.Common;
+using PasswordManager.app.interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,20 @@ namespace PasswordManager.app.Steps
             return StepTitles.REGISTER_STEP;
         }
 
+        protected override void HandleInput()
+        {
+            Console.Write("Username: ");
+            string username = Console.ReadLine();
+            Console.Write("Password: ");
+            string password = Console.ReadLine();
+            Console.Write("Retype Password: ");
+            string retypedPassword = Console.ReadLine();
+
+            Console.Write("\n");
+
+            Aggregator.Instance.Raise(AggregatorMethodNames.NAVIGATE_TO_OUTCOME, "successfully regustered", true);
+        }
+
         #endregion
     }
 
@@ -43,6 +58,11 @@ namespace PasswordManager.app.Steps
     public partial class SelectOptionsDisplay
     {
         public const string REGISTER_STEP = "Register";
+    }
+
+    public partial class AggregatorMethodNames
+    {
+        public const string NAVIGATE_TO_OUTCOME = "NavigateToOutcome";
     }
 
     #endregion

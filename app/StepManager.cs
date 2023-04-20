@@ -18,6 +18,8 @@ namespace PasswordManager.app
         private IStep _previousStep;
         private IStep initialStep;
 
+        private Stack<IStep> _previousSteps;
+
         #endregion
 
         #region Properties
@@ -38,7 +40,11 @@ namespace PasswordManager.app
             get { return _currentStep; }
             set
             {
-                _previousStep = (_currentStep.CanGoBackTo)? _currentStep : _previousStep;
+                _previousStep = _currentStep;
+
+                if (_previousStep.CanGoBackTo)
+                    _previousSteps.Push(_previousStep);
+
                 _currentStep = value;
                 _previousStep.Deactivate();
                 _currentStep.Activate();
@@ -51,6 +57,8 @@ namespace PasswordManager.app
 
         private StepManager()
         {
+            if (_previousSteps == null) _previousSteps = new Stack<IStep>();
+            Aggregator.Instance.Subscribe(AggregatorMethodNames.NAVIGATE_TO_OUTCOME, NavigateToOutcome);
         }
 
         #endregion
@@ -60,14 +68,23 @@ namespace PasswordManager.app
         public void Initialize()
         {
             initialStep = new StartupStep();
+
             IStep loginStep = new LoginStep();
             IStep registerStep = new RegisterStep();
             IStep viewPasswordsStep = new ViewPasswordsStep();
+
+            IStep createPasswordsStep = new CreatePasswordStep();
+            IStep updatePasswordsStep = new UpdatePasswordStep();
+            IStep deletePasswordsStep = new DeletePasswordStep();
 
             initialStep.SelectOptions.Add(loginStep);
             initialStep.SelectOptions.Add(registerStep);
 
             loginStep.SelectOptions.Add(viewPasswordsStep);
+
+            viewPasswordsStep.SelectOptions.Add(createPasswordsStep);
+            viewPasswordsStep.SelectOptions.Add(updatePasswordsStep);
+            viewPasswordsStep.SelectOptions.Add(deletePasswordsStep);
 
             _currentStep = initialStep;
         }
@@ -98,9 +115,13 @@ namespace PasswordManager.app
                 return;
             }
 
-            CurrentStep = _previousStep;
+            CurrentStep = _previousSteps.Pop();
         }
 
+        private void NavigateToOutcome(string message, bool success)
+        {
+            _currentStep = (success) ? new CompleteStep(message) : new FailStep(message);
+        }
         #endregion
     }
 
@@ -109,6 +130,7 @@ namespace PasswordManager.app
     public partial class AggregatorMethodNames
     {
         public const string QUIT_APP = "QuitApp";
+        public const string NAVIGATE_TO_OUTCOME = "NavigateToOutcome";
     }
 
     #endregion

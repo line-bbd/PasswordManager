@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.app.Steps
 {
-    internal class ViewPasswordsStep : IStep
+    internal class UpdatePasswordStep : IStep
     {
         #region Ctor
 
-        public ViewPasswordsStep() : base()
+        public UpdatePasswordStep() : base()
         {
-            _canGoBackTo = true;
+            _canGoBackTo = false;
         }
 
         #endregion
@@ -31,19 +31,19 @@ namespace PasswordManager.app.Steps
 
         public override string GetDisplayOnSelectOption()
         {
-            return SelectOptionsDisplay.VIEW_PASSWORDS_STEP;
+            return SelectOptionsDisplay.UPDATE_PASSWORD_STEP;
         }
 
         protected override string GetDisplayOnActivate()
         {
-            return StepTitles.VIEW_PASSWORDS_STEP
+            return StepTitles.UPDATE_PASSWORD_STEP
                 + "\n\n"
                 + FetchPasswordsForUser();
         }
 
         protected override string GetBackStep()
         {
-            return "Logout";
+            return "Back";
         }
 
         #endregion
@@ -52,12 +52,12 @@ namespace PasswordManager.app.Steps
 
     public partial class StepTitles
     {
-        public const string VIEW_PASSWORDS_STEP = "Passwords Page";
+        public const string UPDATE_PASSWORD_STEP = "Update Password Page";
     }
 
     public partial class SelectOptionsDisplay
     {
-        public const string VIEW_PASSWORDS_STEP = "Continue";
+        public const string UPDATE_PASSWORD_STEP = "Update password";
     }
 
     #endregion

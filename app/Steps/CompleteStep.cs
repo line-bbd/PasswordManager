@@ -1,4 +1,5 @@
-﻿using PasswordManager.app.interfaces;
+﻿using PasswordManager.app.Exceptions;
+using PasswordManager.app.interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +8,19 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.app.Steps
 {
-    internal class ViewPasswordsStep : IStep
+    internal class CompleteStep : IStep
     {
+        #region Fields
+
+        private string message;
+
+        #endregion
+
         #region Ctor
 
-        public ViewPasswordsStep() : base()
+        public CompleteStep(string message) : base()
         {
-            _canGoBackTo = true;
+            _canGoBackTo = false;
         }
 
         #endregion
@@ -31,33 +38,28 @@ namespace PasswordManager.app.Steps
 
         public override string GetDisplayOnSelectOption()
         {
-            return SelectOptionsDisplay.VIEW_PASSWORDS_STEP;
+            throw new NotSelectableOptionException(this.GetType().Name);
         }
 
         protected override string GetDisplayOnActivate()
         {
-            return StepTitles.VIEW_PASSWORDS_STEP
-                + "\n\n"
-                + FetchPasswordsForUser();
+            return StepTitles.OUTCOME_STEP
+                + "\n"
+                + message;
         }
 
         protected override string GetBackStep()
         {
-            return "Logout";
+            return "Done";
         }
 
         #endregion
     }
     #region Common
 
-    public partial class StepTitles
-    {
-        public const string VIEW_PASSWORDS_STEP = "Passwords Page";
-    }
-
     public partial class SelectOptionsDisplay
     {
-        public const string VIEW_PASSWORDS_STEP = "Continue";
+        public const string FAIL_STEP = "failed :(";
     }
 
     #endregion
