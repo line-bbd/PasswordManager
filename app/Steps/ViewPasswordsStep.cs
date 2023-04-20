@@ -1,10 +1,5 @@
 ﻿using PasswordManager.app.interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PasswordManager.app.Common;
+using PasswordManager.app.Services;
 
 namespace PasswordManager.app.Steps
 {
@@ -23,7 +18,8 @@ namespace PasswordManager.app.Steps
 
         private string FetchPasswordsForUser()
         {
-            return "no stored passwords :(";
+            Services.UserServices userServices = new UserServices(CrudOperation.RETRIEVE);
+            return userServices.RetrieveAll();
         }
 
         #endregion
@@ -37,14 +33,16 @@ namespace PasswordManager.app.Steps
 
         protected override string GetDisplayOnActivate()
         {
+
             return StepTitles.VIEW_PASSWORDS_STEP
                 + "\n\n"
+                + "Your existing usernames and passwords per service:\n"
+                + "______________________________________\n\n"
                 + FetchPasswordsForUser();
         }
 
         protected override string GetBackStep()
         {
-            Aggregator.Instance.Raise("logout");
             return "Logout";
         }
 

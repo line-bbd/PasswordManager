@@ -6,18 +6,15 @@ namespace PasswordManager.app.Services
 {
     internal class AuthServices
     {
-        private string loggedInUser = "";
-        private readonly string _connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + getDBPath() + ";Integrated Security=True";
+        private static string loggedInUser = "";
+        private readonly string _connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + Utils.Utils.getDBPath() + ";Integrated Security=True";
 
         #region Constructors
-        public AuthServices()
-        {
-        }
-
         public AuthServices(AuthOperation operation)
         {
             Operation = operation;
             Aggregator.Instance.Subscribe(nameof(logout), logout);
+            Aggregator.Instance.Subscribe(AggregatorMethodNames.GET_LOGGED_IN_USER, GetLoggedInUser);
         }
         #endregion
 
@@ -54,13 +51,11 @@ namespace PasswordManager.app.Services
 
             if (dataTable.Rows.Count == 1)
             {
+                // set active user
                 loggedInUser = username;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         private bool ValidateRegister(string username, string password)
@@ -71,6 +66,7 @@ namespace PasswordManager.app.Services
             using var command = new SqlCommand();
             command.Connection = connection;
 
+            // first check if user doesn't already exist
             command.CommandText = "SELECT * FROM Users WHERE username = @username";
             command.Parameters.AddWithValue("@username", username);
 
@@ -79,30 +75,25 @@ namespace PasswordManager.app.Services
 
             adapter.Fill(dataTable);
 
-            if (dataTable.Rows.Count > 0)
+            if (dataTable.Rows.Count == 0)
             {
-                // user already exists
-                return false;
+                // insert new user
+                command.CommandText = "INSERT INTO Users (username, password) VALUES (@username, @password)";
+                command.Parameters.AddWithValue("@password", password);
+                command.ExecuteNonQuery();
+                return true;
             }
 
-            // insert new user
-            command.CommandText = "INSERT INTO Users (username, password) VALUES (@username, @password)";
-            command.Parameters.AddWithValue("@password", password);
-
-            command.ExecuteNonQuery();
             connection.Close();
 
-            return true;
+            return false;
+        }
+
+        public string GetLoggedInUser()
+        {
+            return loggedInUser;
         }
         public AuthOperation Operation { get; }
-
-        // method to get true file path of db
-        private static string getDBPath()
-        {
-            string systemPath = Path.GetFullPath("database\\");
-            systemPath = systemPath.Substring(0, systemPath.IndexOf("bin")) + "database\\PasswordManagerDB.mdf";
-            return systemPath;
-        }
 
         private void logout()
         {

@@ -1,10 +1,4 @@
 ﻿using PasswordManager.app.Exceptions;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PasswordManager.app.Common
 {
@@ -44,13 +38,13 @@ namespace PasswordManager.app.Common
             actions[methodName] = method;
         }
 
-        public void Raise(string methodName, params object[] parameters)
+        public object Raise(string methodName, params object[] parameters)
         {
             if (actions.ContainsKey(methodName) == false)
                 throw new NoSubscribedMethodException(methodName);
 
             var action = actions[methodName];
-            action.DynamicInvoke(parameters);
+            return action.DynamicInvoke(parameters);
         }
 
         #endregion

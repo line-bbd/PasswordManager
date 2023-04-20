@@ -1,11 +1,5 @@
-﻿using PasswordManager.app.Common;
-using PasswordManager.app.interfaces;
+﻿using PasswordManager.app.interfaces;
 using PasswordManager.app.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PasswordManager.app.Steps
 {
@@ -38,27 +32,32 @@ namespace PasswordManager.app.Steps
 
             while (loginState == LoginState.ERROR)
             {
-                Console.Write("Username: ");
-                string username = Console.ReadLine();
-                Console.Write("Password: ");
-                string password = Console.ReadLine();
+                Console.Write("Username:\n");
+                string? username = Console.ReadLine();
+
+                Console.Write("\nPassword:\n");
+                string? password = Utils.Utils.maskInput();
 
                 Console.Write("\n");
+
+                if (username == "" || password == "")
+                {
+                    Console.WriteLine("Invalid username or password. Please try again.\n");
+                    continue;
+                }
                 loginState = AttemptLogin(username, password);
                 if (loginState == LoginState.ERROR)
                 {
-                    Console.WriteLine("Invalid username or password. Please try again.");
+                    Console.WriteLine("Invalid username or password. Please try again.\n");
                 }
             }
-            Console.WriteLine("Login successful.");
+            Console.WriteLine("Login successful.\n");
         }
 
         protected LoginState AttemptLogin(string username, string password)
         {
-            // TODO: attempt login and return either success or error state
             Services.AuthServices authServices = new Services.AuthServices(AuthOperation.LOGIN);
-            LoginState response = (authServices.Execute(username, password)) ? LoginState.SUCCESS : LoginState.ERROR;
-            return response;
+            return (authServices.Execute(username, password)) ? LoginState.SUCCESS : LoginState.ERROR;
         }
 
         #endregion

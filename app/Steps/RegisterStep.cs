@@ -1,10 +1,4 @@
-﻿using PasswordManager.app.Common;
-using PasswordManager.app.interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PasswordManager.app.interfaces;
 using PasswordManager.app.Services;
 
 namespace PasswordManager.app.Steps
@@ -38,31 +32,36 @@ namespace PasswordManager.app.Steps
 
             while (registrationState == RegistrationState.ERROR)
             {
-                Console.Write("Username: ");
+                Console.Write("Username:\n");
                 string? username = Console.ReadLine();
-                Console.Write("Password: ");
-                string? password = Console.ReadLine();
-                Console.Write("Retype Password: ");
-                string? retypedPassword = Console.ReadLine();
+
+                Console.Write("\nPassword:\n");
+                string? password = Utils.Utils.maskInput();
+
+                Console.Write("\nConfirm password:\n");
+                string? retypedPassword = Utils.Utils.maskInput();
 
                 Console.Write("\n");
 
-                if (username == null || password == null || retypedPassword == null)
+                if (password != retypedPassword)
                 {
-                    Console.WriteLine("Invalid username or password. Please try again.");
+                    Console.WriteLine("Passwords do not match. Please try again.\n");
                     continue;
                 }
 
+                if (username == "" || password == "" || retypedPassword == "")
+                {
+                    Console.WriteLine("Invalid username or password. Please try again.\n");
+                    continue;
+                }
                 registrationState = AttemptRegistration(username, password, retypedPassword);
 
                 if (registrationState == RegistrationState.ERROR)
                 {
-                    Console.WriteLine("Invalid username or password. Please try again.");
+                    Console.WriteLine("Invalid username or password. Please try again.\n");
                 }
             }
-            Console.WriteLine("Registration successful.");
-
-            // Aggregator.Instance.Raise(AggregatorMethodNames.NAVIGATE_TO_OUTCOME, "successfully regustered", true);
+            Console.WriteLine("Registration successful.\n");
         }
 
         #endregion
@@ -71,13 +70,13 @@ namespace PasswordManager.app.Steps
         {
             if (password != retypedPassword)
             {
-                Console.WriteLine("Passwords do not match. Please try again.");
+                Console.WriteLine("Passwords do not match. Please try again.\n");
                 return RegistrationState.ERROR;
             }
             Services.AuthServices authServices = new Services.AuthServices(AuthOperation.REGISTER);
             return (authServices.Execute(username, password)) ? RegistrationState.SUCCESS : RegistrationState.ERROR;
-
         }
+
         internal enum RegistrationState
         {
             SUCCESS,
