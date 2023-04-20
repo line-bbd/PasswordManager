@@ -56,8 +56,9 @@ namespace PasswordManager.app.Steps
         protected LoginState AttemptLogin(string username, string password)
         {
             // TODO: attempt login and return either success or error state
-            return LoginState.SUCCESS;
-
+            Services.AuthServices authServices = new Services.AuthServices(AuthOperation.LOGIN);
+            LoginState response = (authServices.Execute(username, password)) ? LoginState.SUCCESS : LoginState.ERROR;
+            return response;
         }
 
         #endregion

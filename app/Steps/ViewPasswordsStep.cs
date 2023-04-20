@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PasswordManager.app.Common;
 
 namespace PasswordManager.app.Steps
 {
@@ -43,6 +44,7 @@ namespace PasswordManager.app.Steps
 
         protected override string GetBackStep()
         {
+            Aggregator.Instance.Raise("logout");
             return "Logout";
         }
 

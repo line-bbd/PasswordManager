@@ -1,10 +1,12 @@
 using System.Data;
 using System.Data.SqlClient;
+using PasswordManager.app.Common;
 
 namespace PasswordManager.app.Services
 {
     internal class AuthServices
     {
+        private string loggedInUser = "";
         private readonly string _connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + getDBPath() + ";Integrated Security=True";
 
         #region Constructors
@@ -12,57 +14,85 @@ namespace PasswordManager.app.Services
         {
         }
 
-        public AuthServices(AuthOperation operation, string username, string password)
+        public AuthServices(AuthOperation operation)
         {
             Operation = operation;
-            Execute(operation, username, password);
+            Aggregator.Instance.Subscribe(nameof(logout), logout);
         }
         #endregion
 
-        private void Execute(AuthOperation operation, string username, string password)
+        public bool Execute(string username, string password)
         {
-            using var connection = new SqlConnection(_connectionString);
-            using var command = new SqlCommand();
-            command.Connection = connection;
-
-            switch (operation)
+            switch (Operation)
             {
                 case AuthOperation.LOGIN:
-                    command.CommandText = "SELECT * FROM Users WHERE username = @username AND password = @password";
-                    ValidateLogin(command, connection);
-                    break;
+                    return ValidateLogin(username, password);
                 case AuthOperation.REGISTER:
-                    command.CommandText = "";
-                    break;
+                    return ValidateRegister(username, password);
                 default:
                     throw new InvalidOperationException("Invalid operation specified.");
             }
-
-
         }
 
-        private bool ValidateLogin(SqlCommand command, SqlConnection connection)
+        private bool ValidateLogin(string username, string password)
         {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = new SqlCommand();
+            command.Connection = connection;
+
+            command.CommandText = "SELECT * FROM Users WHERE username = @username AND password = @password";
+            command.Parameters.AddWithValue("@username", username);
+            command.Parameters.AddWithValue("@password", password);
+
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
             DataTable dataTable = new DataTable();
 
-            // command.Parameters.AddWithValue("@username", username);
-            // command.Parameters.AddWithValue("@password", password);
-
-            connection.Open();
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
             adapter.Fill(dataTable);
             connection.Close();
 
             if (dataTable.Rows.Count == 1)
             {
-                // login success
+                loggedInUser = username;
                 return true;
             }
             else
             {
-                // login failed
                 return false;
             }
+        }
+
+        private bool ValidateRegister(string username, string password)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            using var command = new SqlCommand();
+            command.Connection = connection;
+
+            command.CommandText = "SELECT * FROM Users WHERE username = @username";
+            command.Parameters.AddWithValue("@username", username);
+
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+
+            adapter.Fill(dataTable);
+
+            if (dataTable.Rows.Count > 0)
+            {
+                // user already exists
+                return false;
+            }
+
+            // insert new user
+            command.CommandText = "INSERT INTO Users (username, password) VALUES (@username, @password)";
+            command.Parameters.AddWithValue("@password", password);
+
+            command.ExecuteNonQuery();
+            connection.Close();
+
+            return true;
         }
         public AuthOperation Operation { get; }
 
@@ -72,6 +102,11 @@ namespace PasswordManager.app.Services
             string systemPath = Path.GetFullPath("database\\");
             systemPath = systemPath.Substring(0, systemPath.IndexOf("bin")) + "database\\PasswordManagerDB.mdf";
             return systemPath;
+        }
+
+        private void logout()
+        {
+            loggedInUser = "";
         }
     }
     internal enum AuthOperation
