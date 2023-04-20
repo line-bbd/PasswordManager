@@ -15,17 +15,17 @@ namespace PasswordManager.app.Services
         public AuthServices(AuthOperation operation, string username, string password)
         {
             Operation = operation;
-            Execute(username, password);
+            Execute(operation, username, password);
         }
         #endregion
 
-        private void Execute(Operation operation, string username, string password)
+        private void Execute(AuthOperation operation, string username, string password)
         {
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand();
             command.Connection = connection;
 
-            switch (Operation)
+            switch (operation)
             {
                 case AuthOperation.LOGIN:
                     command.CommandText = "SELECT * FROM Users WHERE username = @username AND password = @password";
@@ -45,8 +45,8 @@ namespace PasswordManager.app.Services
         {
             DataTable dataTable = new DataTable();
 
-            command.Parameters.AddWithValue("@username", username);
-            command.Parameters.AddWithValue("@password", password);
+            // command.Parameters.AddWithValue("@username", username);
+            // command.Parameters.AddWithValue("@password", password);
 
             connection.Open();
             SqlDataAdapter adapter = new SqlDataAdapter(command);

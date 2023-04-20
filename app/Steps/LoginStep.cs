@@ -34,27 +34,36 @@ namespace PasswordManager.app.Steps
 
         protected override void HandleInput()
         {
-            Console.Write("Username: ");
-            string username = Console.ReadLine();
-            Console.Write("Password: ");
-            string password = Console.ReadLine();
+            LoginState loginState = LoginState.ERROR;
 
-            Console.Write("\n");
+            while (loginState == LoginState.ERROR)
+            {
+                Console.Write("Username: ");
+                string username = Console.ReadLine();
+                Console.Write("Password: ");
+                string password = Console.ReadLine();
 
-
+                Console.Write("\n");
+                loginState = AttemptLogin(username, password);
+                if (loginState == LoginState.ERROR)
+                {
+                    Console.WriteLine("Invalid username or password. Please try again.");
+                }
+            }
+            Console.WriteLine("Login successful.");
         }
 
-        protected loginState AttemptLogin(string username, string password)
+        protected LoginState AttemptLogin(string username, string password)
         {
             // TODO: attempt login and return either success or error state
-            
+            return LoginState.SUCCESS;
 
         }
 
         #endregion
     }
 
-    internal enum loginState
+    internal enum LoginState
     {
         SUCCESS,
         ERROR

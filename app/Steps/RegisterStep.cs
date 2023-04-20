@@ -33,37 +33,60 @@ namespace PasswordManager.app.Steps
 
         protected override void HandleInput()
         {
-            Console.Write("Username: ");
-            string username = Console.ReadLine();
-            Console.Write("Password: ");
-            string password = Console.ReadLine();
-            Console.Write("Retype Password: ");
-            string retypedPassword = Console.ReadLine();
+            RegistrationState registrationState = RegistrationState.ERROR;
 
-            Console.Write("\n");
+            while (registrationState == RegistrationState.ERROR)
+            {
+                Console.Write("Username: ");
+                string username = Console.ReadLine();
+                Console.Write("Password: ");
+                string password = Console.ReadLine();
+                Console.Write("Retype Password: ");
+                string retypedPassword = Console.ReadLine();
+
+                Console.Write("\n");
+
+                registrationState = AttemptRegistration(username, password, retypedPassword);
+            }
+            Console.WriteLine("Registration successful.");
 
             Aggregator.Instance.Raise(AggregatorMethodNames.NAVIGATE_TO_OUTCOME, "successfully regustered", true);
         }
 
+        protected RegistrationState AttemptRegistration(string username, string password, string retypedPassword)
+        {
+            if (password != retypedPassword)
+            {
+                Console.WriteLine("Passwords do not match. Please try again.");
+                return RegistrationState.ERROR;
+            }
+            // add proper validation to return another error if something else is wrong
+            return RegistrationState.SUCCESS;
+
+            #endregion
+        }
+        internal enum RegistrationState
+        {
+            SUCCESS,
+            ERROR
+        }
+        #region Common
+
+        public partial class StepTitles
+        {
+            public const string REGISTER_STEP = "Register Page";
+        }
+
+        public partial class SelectOptionsDisplay
+        {
+            public const string REGISTER_STEP = "Register";
+        }
+
+        public partial class AggregatorMethodNames
+        {
+            public const string NAVIGATE_TO_OUTCOME = "NavigateToOutcome";
+        }
+
         #endregion
     }
-
-    #region Common
-
-    public partial class StepTitles
-    {
-        public const string REGISTER_STEP = "Register Page";
-    }
-
-    public partial class SelectOptionsDisplay
-    {
-        public const string REGISTER_STEP = "Register";
-    }
-
-    public partial class AggregatorMethodNames
-    {
-        public const string NAVIGATE_TO_OUTCOME = "NavigateToOutcome";
-    }
-
-    #endregion
 }
