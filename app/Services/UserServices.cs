@@ -26,13 +26,13 @@ namespace PasswordManager.app.Services
 
             switch (Operation)
             {
-                case CrudOperation.Add:
+                case CrudOperation.ADD:
                     command.CommandText = "INSERT INTO Entries (userID, username, password, service) VALUES (@userID, @username, @password, @service)";
                     break;
-                case CrudOperation.Update:
+                case CrudOperation.UPDATE:
                     command.CommandText = "";
                     break;
-                case CrudOperation.Delete:
+                case CrudOperation.DELETE:
                     command.CommandText = "";
                     break;
                 default:
@@ -60,9 +60,9 @@ namespace PasswordManager.app.Services
     }
     internal enum CrudOperation
     {
-        Add,
-        Update,
-        Delete
+        ADD,
+        UPDATE,
+        DELETE
     }
 
 }

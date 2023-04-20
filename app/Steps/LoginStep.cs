@@ -1,5 +1,6 @@
 ﻿using PasswordManager.app.Common;
 using PasswordManager.app.interfaces;
+using PasswordManager.app.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,15 +34,40 @@ namespace PasswordManager.app.Steps
 
         protected override void HandleInput()
         {
-            Console.Write("Username: ");
-            string username = Console.ReadLine();
-            Console.Write("Password: ");
-            string password = Console.ReadLine();
+            LoginState loginState = LoginState.ERROR;
 
-            Console.Write("\n");
+            while (loginState == LoginState.ERROR)
+            {
+                Console.Write("Username: ");
+                string username = Console.ReadLine();
+                Console.Write("Password: ");
+                string password = Console.ReadLine();
+
+                Console.Write("\n");
+                loginState = AttemptLogin(username, password);
+                if (loginState == LoginState.ERROR)
+                {
+                    Console.WriteLine("Invalid username or password. Please try again.");
+                }
+            }
+            Console.WriteLine("Login successful.");
+        }
+
+        protected LoginState AttemptLogin(string username, string password)
+        {
+            // TODO: attempt login and return either success or error state
+            Services.AuthServices authServices = new Services.AuthServices(AuthOperation.LOGIN);
+            LoginState response = (authServices.Execute(username, password)) ? LoginState.SUCCESS : LoginState.ERROR;
+            return response;
         }
 
         #endregion
+    }
+
+    internal enum LoginState
+    {
+        SUCCESS,
+        ERROR
     }
 
     #region Common
