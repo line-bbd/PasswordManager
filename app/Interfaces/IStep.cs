@@ -68,7 +68,7 @@ namespace PasswordManager.app.interfaces
 
         public void Deactivate()
         {
-
+            Console.Clear();
         }
 
         #endregion
