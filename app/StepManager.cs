@@ -120,7 +120,7 @@ namespace PasswordManager.app
 
         private void NavigateToOutcome(string message, bool success)
         {
-            _currentStep = (success) ? new CompleteStep(message) : new FailStep(message);
+            CurrentStep = (success) ? new CompleteStep(message) : new FailStep(message);
         }
         #endregion
     }
