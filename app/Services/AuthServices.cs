@@ -1,24 +1,25 @@
+using System.Data;
 using System.Data.SqlClient;
 
 namespace PasswordManager.app.Services
 {
-    internal class UserServices
+    internal class AuthServices
     {
         private readonly string _connectionString = @"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=" + getDBPath() + ";Integrated Security=True";
 
         #region Constructors
-        public UserServices()
+        public AuthServices()
         {
         }
 
-        public UserServices(CrudOperation operation, int userID, string username, string password, string service)
+        public AuthServices(AuthOperation operation, string username, string password)
         {
             Operation = operation;
-            Execute(userID, username, password, service);
+            Execute(username, password);
         }
         #endregion
 
-        public void Execute(int userID, string username, string password, string service)
+        private void Execute(Operation operation, string username, string password)
         {
             using var connection = new SqlConnection(_connectionString);
             using var command = new SqlCommand();
@@ -26,29 +27,44 @@ namespace PasswordManager.app.Services
 
             switch (Operation)
             {
-                case CrudOperation.ADD:
-                    command.CommandText = "INSERT INTO Entries (userID, username, password, service) VALUES (@userID, @username, @password, @service)";
+                case AuthOperation.LOGIN:
+                    command.CommandText = "SELECT * FROM Users WHERE username = @username AND password = @password";
+                    ValidateLogin(command, connection);
                     break;
-                case CrudOperation.UPDATE:
-                    command.CommandText = "";
-                    break;
-                case CrudOperation.DELETE:
+                case AuthOperation.REGISTER:
                     command.CommandText = "";
                     break;
                 default:
                     throw new InvalidOperationException("Invalid operation specified.");
             }
 
-            command.Parameters.AddWithValue("@userID", userID);
+
+        }
+
+        private bool ValidateLogin(SqlCommand command, SqlConnection connection)
+        {
+            DataTable dataTable = new DataTable();
+
             command.Parameters.AddWithValue("@username", username);
             command.Parameters.AddWithValue("@password", password);
-            command.Parameters.AddWithValue("@service", service);
-
 
             connection.Open();
-            command.ExecuteNonQuery();
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            adapter.Fill(dataTable);
+            connection.Close();
+
+            if (dataTable.Rows.Count == 1)
+            {
+                // login success
+                return true;
+            }
+            else
+            {
+                // login failed
+                return false;
+            }
         }
-        public CrudOperation Operation { get; }
+        public AuthOperation Operation { get; }
 
         // method to get true file path of db
         private static string getDBPath()
@@ -58,11 +74,10 @@ namespace PasswordManager.app.Services
             return systemPath;
         }
     }
-    internal enum CrudOperation
+    internal enum AuthOperation
     {
-        ADD,
-        UPDATE,
-        DELETE
+        LOGIN,
+        REGISTER,
     }
 
 }

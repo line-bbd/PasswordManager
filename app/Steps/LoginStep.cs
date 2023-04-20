@@ -1,5 +1,6 @@
 ﻿using PasswordManager.app.Common;
 using PasswordManager.app.interfaces;
+using PasswordManager.app.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,9 +40,24 @@ namespace PasswordManager.app.Steps
             string password = Console.ReadLine();
 
             Console.Write("\n");
+
+
+        }
+
+        protected loginState AttemptLogin(string username, string password)
+        {
+            // TODO: attempt login and return either success or error state
+            
+
         }
 
         #endregion
+    }
+
+    internal enum loginState
+    {
+        SUCCESS,
+        ERROR
     }
 
     #region Common
