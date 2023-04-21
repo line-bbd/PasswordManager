@@ -79,7 +79,7 @@ namespace PasswordManager.app.Services
             {
                 // insert new user
                 command.CommandText = "INSERT INTO Users (username, password) VALUES (@username, @password)";
-                command.Parameters.AddWithValue("@password", password);
+                command.Parameters.AddWithValue("@password", (string)Aggregator.Instance.Raise("GetHash", password));
                 command.ExecuteNonQuery();
                 return true;
             }

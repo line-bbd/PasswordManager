@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.Extensions.Configuration;
+using PasswordManager.app.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +12,23 @@ namespace PasswordManager.app.Services
 {
     internal class EncryptionService
     {
-        public EncryptionService() { }
+        private IConfiguration _configuration;
+        public EncryptionService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+
+            Aggregator.Instance.Subscribe(nameof(Encrypt),Encrypt);
+            Aggregator.Instance.Subscribe(nameof(Decrypt), Decrypt);
+        }
 
         public string Encrypt(string input)
         {
-            var bArr = Protect(Encoding.ASCII.GetBytes(input));
-
-            return BytesToString(bArr);
+            return EncryptString(_configuration["PasswordManager:EncryptionKey"], input);
         }
 
-        public string Dencrypt(string input)
+        public string Decrypt(string input)
         {
-            var bArr = Unprotect(Encoding.ASCII.GetBytes(input));
-
-            return BytesToString(bArr);
+            return DecryptString(_configuration["PasswordManager:EncryptionKey"], input);
         }
 
         private static byte[] Protect(byte[] data)
@@ -47,6 +51,59 @@ namespace PasswordManager.app.Services
                 sb.Append(c);
             }
             return sb.ToString();
+        }
+
+        public static string EncryptString(string key, string plainText)
+        {
+            byte[] iv = new byte[16];
+            byte[] array;
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+
+                ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter streamWriter = new StreamWriter((Stream)cryptoStream))
+                        {
+                            streamWriter.Write(plainText);
+                        }
+
+                        array = memoryStream.ToArray();
+                    }
+                }
+            }
+
+            return Convert.ToBase64String(array);
+        }
+
+        public static string DecryptString(string key, string cipherText)
+        {
+            byte[] iv = new byte[16];
+            byte[] buffer = Convert.FromBase64String(cipherText);
+
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = Encoding.UTF8.GetBytes(key);
+                aes.IV = iv;
+                ICryptoTransform decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+
+                using (MemoryStream memoryStream = new MemoryStream(buffer))
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader streamReader = new StreamReader((Stream)cryptoStream))
+                        {
+                            return streamReader.ReadToEnd();
+                        }
+                    }
+                }
+            }
         }
 
     }

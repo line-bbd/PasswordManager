@@ -66,7 +66,7 @@ namespace PasswordManager.app.Services
 
             // add entry
             command.CommandText = "INSERT INTO Entries (userID, username, password, service) VALUES (@userID, @username, @password, @service)";
-            command.Parameters.AddWithValue("@password", password);
+            command.Parameters.AddWithValue("@password", (string) Aggregator.Instance.Raise("Encrypt", password));
             command.ExecuteNonQuery();
 
             connection.Close();
@@ -146,7 +146,10 @@ namespace PasswordManager.app.Services
                 {
                     string value = data.Rows[i][k].ToString().PadRight(max);
 
-                    sb.AppendFormat(format, value, "", "");
+                    if (k == data.Columns.Count - 1)
+                        sb.AppendFormat(format, (string)Aggregator.Instance.Raise("Decrypt", value), "", "");
+                    else
+                        sb.AppendFormat(format, value, "", "");
                 }
                 sb.Append("\n");
             }
