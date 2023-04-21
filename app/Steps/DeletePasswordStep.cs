@@ -1,9 +1,5 @@
 ﻿using PasswordManager.app.interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PasswordManager.app.Services;
 
 namespace PasswordManager.app.Steps
 {
@@ -22,7 +18,8 @@ namespace PasswordManager.app.Steps
 
         private string FetchPasswordsForUser()
         {
-            return "no stored passwords :(";
+            Services.UserServices userServices = new UserServices(CrudOperation.RETRIEVE);
+            return userServices.RetrieveAll();
         }
 
         #endregion
@@ -38,12 +35,39 @@ namespace PasswordManager.app.Steps
         {
             return StepTitles.DELETE_PASSWORD_STEP
                 + "\n\n"
+                + "Your existing usernames and passwords per service:\n"
+                + "______________________________________\n\n"
                 + FetchPasswordsForUser();
         }
 
         protected override string GetBackStep()
         {
             return "Back";
+        }
+
+        protected override void HandleInput()
+        {
+            bool flag = false;
+            while (!flag)
+            {
+                Console.WriteLine("Enter the name of the service you want to delete the entry for:");
+                string? service = Console.ReadLine();
+
+                Console.Write("\nConfirm the username:\n");
+                string? username = Console.ReadLine();
+
+                Console.Write("\n");
+
+                if (service == "" || username == "")
+                {
+                    Console.WriteLine("Invalid service or username. Please try again.\n\n");
+                    continue;
+                }
+
+                Services.UserServices userServices = new Services.UserServices(Services.CrudOperation.DELETE);
+                flag = userServices.Execute(username, null, service);
+            }
+            Console.WriteLine("Entry deleted successfully.\n");
         }
 
         #endregion

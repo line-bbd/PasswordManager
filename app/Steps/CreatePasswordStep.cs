@@ -1,9 +1,4 @@
 ﻿using PasswordManager.app.interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PasswordManager.app.Steps
 {
@@ -18,15 +13,6 @@ namespace PasswordManager.app.Steps
 
         #endregion
 
-        #region Private
-
-        private string FetchPasswordsForUser()
-        {
-            return "no stored passwords :(";
-        }
-
-        #endregion
-
         #region Override
 
         public override string GetDisplayOnSelectOption()
@@ -36,9 +22,7 @@ namespace PasswordManager.app.Steps
 
         protected override string GetDisplayOnActivate()
         {
-            return StepTitles.CREATE_PASSWORD_STEP
-                + "\n\n"
-                + FetchPasswordsForUser();
+            return StepTitles.CREATE_PASSWORD_STEP;
         }
 
         protected override string GetBackStep()
@@ -46,9 +30,40 @@ namespace PasswordManager.app.Steps
             return "Back";
         }
 
+        protected override void HandleInput()
+        {
+            bool flag = false;
+            while (!flag)
+            {
+                Console.WriteLine("Enter the name of the service you want to create a password for:");
+                string? service = Console.ReadLine();
+
+                Console.Write("\nUsername:\n");
+                string? username = Console.ReadLine();
+
+                Console.Write("\nPassword:\n");
+                string? password = Utils.Utils.maskInput();
+
+                Console.Write("\nConfirm password:\n");
+                string? retypedPassword = Utils.Utils.maskInput();
+
+                Console.Write("\n");
+
+                if (service == "" || username == "" || password == "" || retypedPassword == "")
+                {
+                    Console.WriteLine("Invalid input. Please try again.\n\n");
+                    continue;
+                }
+
+                Services.UserServices userServices = new Services.UserServices(Services.CrudOperation.ADD);
+                flag = userServices.Execute(username, password, service);
+            }
+            Console.WriteLine("Password created successfully.\n");
+        }
         #endregion
     }
     #region Common
+
 
     public partial class StepTitles
     {

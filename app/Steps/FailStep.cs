@@ -44,11 +44,6 @@ namespace PasswordManager.app.Steps
                 + message;
         }
 
-        protected override string GetBackStep()
-        {
-            return "Back";
-        }
-
         #endregion
     }
     #region Common

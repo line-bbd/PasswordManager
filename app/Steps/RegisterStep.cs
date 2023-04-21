@@ -1,10 +1,5 @@
-﻿using PasswordManager.app.Common;
-using PasswordManager.app.interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PasswordManager.app.interfaces;
+using PasswordManager.app.Services;
 
 namespace PasswordManager.app.Steps
 {
@@ -33,37 +28,77 @@ namespace PasswordManager.app.Steps
 
         protected override void HandleInput()
         {
-            Console.Write("Username: ");
-            string username = Console.ReadLine();
-            Console.Write("Password: ");
-            string password = Console.ReadLine();
-            Console.Write("Retype Password: ");
-            string retypedPassword = Console.ReadLine();
+            RegistrationState registrationState = RegistrationState.ERROR;
 
-            Console.Write("\n");
+            while (registrationState == RegistrationState.ERROR)
+            {
+                Console.Write("Username:\n");
+                string? username = Console.ReadLine();
 
-            Aggregator.Instance.Raise(AggregatorMethodNames.NAVIGATE_TO_OUTCOME, "successfully regustered", true);
+                Console.Write("\nPassword:\n");
+                string? password = Utils.Utils.maskInput();
+
+                Console.Write("\nConfirm password:\n");
+                string? retypedPassword = Utils.Utils.maskInput();
+
+                Console.Write("\n");
+
+                if (password != retypedPassword)
+                {
+                    Console.WriteLine("Passwords do not match. Please try again.\n");
+                    continue;
+                }
+
+                if (username == "" || password == "" || retypedPassword == "")
+                {
+                    Console.WriteLine("Invalid username or password. Please try again.\n");
+                    continue;
+                }
+                registrationState = AttemptRegistration(username, password, retypedPassword);
+
+                if (registrationState == RegistrationState.ERROR)
+                {
+                    Console.WriteLine("Invalid username or password. Please try again.\n");
+                }
+            }
+            Console.WriteLine("Registration successful.\n");
+        }
+
+        #endregion
+
+        protected RegistrationState AttemptRegistration(string username, string password, string retypedPassword)
+        {
+            if (password != retypedPassword)
+            {
+                Console.WriteLine("Passwords do not match. Please try again.\n");
+                return RegistrationState.ERROR;
+            }
+            Services.AuthServices authServices = new Services.AuthServices(AuthOperation.REGISTER);
+            return (authServices.Execute(username, password)) ? RegistrationState.SUCCESS : RegistrationState.ERROR;
+        }
+
+        internal enum RegistrationState
+        {
+            SUCCESS,
+            ERROR
+        }
+        #region Common
+
+        public partial class StepTitles
+        {
+            public const string REGISTER_STEP = "Register Page";
+        }
+
+        public partial class SelectOptionsDisplay
+        {
+            public const string REGISTER_STEP = "Register";
+        }
+
+        public partial class AggregatorMethodNames
+        {
+            public const string NAVIGATE_TO_OUTCOME = "NavigateToOutcome";
         }
 
         #endregion
     }
-
-    #region Common
-
-    public partial class StepTitles
-    {
-        public const string REGISTER_STEP = "Register Page";
-    }
-
-    public partial class SelectOptionsDisplay
-    {
-        public const string REGISTER_STEP = "Register";
-    }
-
-    public partial class AggregatorMethodNames
-    {
-        public const string NAVIGATE_TO_OUTCOME = "NavigateToOutcome";
-    }
-
-    #endregion
 }

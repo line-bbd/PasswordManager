@@ -2,11 +2,6 @@
 using PasswordManager.app.Exceptions;
 using PasswordManager.app.interfaces;
 using PasswordManager.app.Steps;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PasswordManager.app
 {
@@ -74,7 +69,6 @@ namespace PasswordManager.app
             IStep viewPasswordsStep = new ViewPasswordsStep();
 
             IStep createPasswordsStep = new CreatePasswordStep();
-            IStep updatePasswordsStep = new UpdatePasswordStep();
             IStep deletePasswordsStep = new DeletePasswordStep();
 
             initialStep.SelectOptions.Add(loginStep);
@@ -83,7 +77,6 @@ namespace PasswordManager.app
             loginStep.SelectOptions.Add(viewPasswordsStep);
 
             viewPasswordsStep.SelectOptions.Add(createPasswordsStep);
-            viewPasswordsStep.SelectOptions.Add(updatePasswordsStep);
             viewPasswordsStep.SelectOptions.Add(deletePasswordsStep);
 
             _currentStep = initialStep;
@@ -101,6 +94,12 @@ namespace PasswordManager.app
             if (selectOptionIndex == CurrentStep.SelectOptions.Count + 1)
             {
                 GoBack();
+                return;
+            }
+
+            if (selectOptionIndex > CurrentStep.SelectOptions.Count || selectOptionIndex < 1)
+            {
+                Console.WriteLine("Invalid option selected. Please try again.\n");
                 return;
             }
 
@@ -131,6 +130,8 @@ namespace PasswordManager.app
     {
         public const string QUIT_APP = "QuitApp";
         public const string NAVIGATE_TO_OUTCOME = "NavigateToOutcome";
+
+        public const string GET_LOGGED_IN_USER = "GetLoggedInUser";
     }
 
     #endregion
