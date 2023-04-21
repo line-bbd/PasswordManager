@@ -1,5 +1,13 @@
-﻿using PasswordManager.app;
+using Microsoft.Extensions.Configuration;
+using PasswordManager.app;
 using PasswordManager.app.Common;
+using PasswordManager.app.Services;
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
+// using PasswordManager.app.Services;
 
 namespace PasswordManager
 {
@@ -7,12 +15,23 @@ namespace PasswordManager
     {
         private static bool _isActive = true;
 
+        private static IConfigurationRoot config;
+
         static void Main(string[] args)
         {
+
+            config = new ConfigurationBuilder()
+                .AddUserSecrets<Program>()
+                .Build();
+
             Aggregator.Instance.Subscribe(nameof(QuitApp), QuitApp);
+            Aggregator.Instance.Subscribe(nameof(GetConfig), GetConfig);
 
             StepManager.Instance.Initialize();
             StepManager.Instance.Start();
+
+            HashService hashService = new HashService(config);
+            EncryptionService EncryptionService = new EncryptionService(config);
 
             string userInput;
 
@@ -28,6 +47,11 @@ namespace PasswordManager
                     userInput = "-1";
                 }
             }
+        }
+
+        private static IConfigurationRoot GetConfig()
+        {
+            return config;
         }
 
         private static bool isInt(string input)
