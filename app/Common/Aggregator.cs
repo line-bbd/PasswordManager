@@ -44,13 +44,13 @@ namespace PasswordManager.app.Common
             actions[methodName] = method;
         }
 
-        public void Raise(string methodName, params object[] parameters)
+        public object Raise(string methodName, params object[] parameters)
         {
             if (actions.ContainsKey(methodName) == false)
                 throw new NoSubscribedMethodException(methodName);
 
             var action = actions[methodName];
-            action.DynamicInvoke(parameters);
+            return action.DynamicInvoke(parameters);
         }
 
         #endregion
