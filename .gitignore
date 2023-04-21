@@ -2,3 +2,5 @@
 .vs
 .git
 obj/
+bin/
+queries/
