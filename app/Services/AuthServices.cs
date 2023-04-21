@@ -41,7 +41,7 @@ namespace PasswordManager.app.Services
 
             command.CommandText = "SELECT * FROM Users WHERE username = @username AND password = @password";
             command.Parameters.AddWithValue("@username", username);
-            command.Parameters.AddWithValue("@password", password);
+            command.Parameters.AddWithValue("@password", (string) Aggregator.Instance.Raise("GetHash", password));
 
             SqlDataAdapter adapter = new SqlDataAdapter(command);
             DataTable dataTable = new DataTable();

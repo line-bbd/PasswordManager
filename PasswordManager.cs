@@ -1,5 +1,12 @@
-﻿using PasswordManager.app;
+using PasswordManager.app;
 using PasswordManager.app.Common;
+using PasswordManager.app.Services;
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
+// using PasswordManager.app.Services;
 
 namespace PasswordManager
 {
@@ -13,6 +20,8 @@ namespace PasswordManager
 
             StepManager.Instance.Initialize();
             StepManager.Instance.Start();
+
+            HashService hashService = new HashService();
 
             string userInput;
 
